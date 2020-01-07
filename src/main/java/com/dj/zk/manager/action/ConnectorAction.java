@@ -10,7 +10,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +57,7 @@ public class ConnectorAction {
 				if(o1.getZooHost().compareTo(o2.getZooHost()) > 0) {
 					return -1;
 				}  
-				if (o1.getZooHost().equals(o2.getZooHost())  && StringUtils.isNotEmpty(o1.getClientHostPort()) 
+				if (o1.getZooHost().equals(o2.getZooHost())  && StringUtils.isNotEmpty(o1.getClientHostPort())
 						&& StringUtils.isNotEmpty(o2.getClientHostPort()) 
 						&& o1.getClientHostPort().compareTo(o2.getClientHostPort()) > 0) {
 					return 1;
