@@ -14,7 +14,7 @@
 		<zookeeper.version>3.4.14</zookeeper.version>
 		<jackson.version>2.10.1</jackson.version>
 		<commons.lang.version>3.9</commons.lang.version>
-		<commons.io.version>2.1</commons.io.version>
+		<commons.io.version>2.7</commons.io.version>
 		<aspectjrt.version>1.9.5</aspectjrt.version>
 		<curator.version>4.1.0</curator.version>
 		<copyright.year>2013</copyright.year>
