@@ -72,21 +72,24 @@ public class UsedAppAction {
 				cu.setAppPath(p.getProperty("appPath"));
 				cu.setConfigPath(p.getProperty("configPath"));
 				cu.setServerIp(p.getProperty("serverIp"));
-				cu.setCreateTime(Long.valueOf(p.getProperty("createTime")));
+				if (p.getProperty("createTime") != null) {
+					cu.setCreateTime(Long.valueOf(p.getProperty("createTime")));
+				}
+
 				cu.setStartConf(p.getProperty("startConf"));
 				cu.setSystemConf(p.getProperty("systemConf"));
 				if(StringUtils.isEmpty(serverIp) && StringUtils.isEmpty(configPath)) {
 					listcus.add(cu);
 				} else if (!StringUtils.isEmpty(serverIp) && !StringUtils.isEmpty(configPath)) {
-					if(cu.getServerIp().startsWith(serverIp) && cu.getConfigPath().startsWith(configPath)) {
+					if( StringUtils.startsWith(cu.getServerIp(),serverIp) && StringUtils.startsWith(cu.getConfigPath(),configPath)) {
 		        		listcus.add(cu);
 		        	}
 				} else if (!StringUtils.isEmpty(serverIp) && StringUtils.isEmpty(configPath)) {
-					if(cu.getServerIp().startsWith(serverIp)) {
+					if(StringUtils.startsWith(cu.getServerIp(),serverIp) ) {
 		        		listcus.add(cu);
 		        	}
 				} else if (StringUtils.isEmpty(serverIp) && !StringUtils.isEmpty(configPath)) {
-					if(cu.getConfigPath().startsWith(configPath)) {
+					if(StringUtils.startsWith(cu.getConfigPath(),configPath)) {
 		        		listcus.add(cu);
 		        	}
 				}

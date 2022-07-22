@@ -85,8 +85,12 @@ public class ZooKeeperAction {
 
 		if (!treeDto.getPath().startsWith("/")) {
 			treeDto.setPath("/" + treeDto.getPath());
+		} else if (StringUtils.equals(treeDto.getPath(),"/")) {
+			treeDto.setPath( "/" + treeDto.getNode());
+		} else {
+			treeDto.setPath(treeDto.getPath() + "/" + treeDto.getNode());
 		}
-		treeDto.setPath(treeDto.getPath() + "/" + treeDto.getNode());
+
 		try {
 			zookeeperService.createNode(treeDto.getPath(), treeDto.getData()
 					.getBytes(Constants.charset));

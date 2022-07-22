@@ -43,7 +43,7 @@ public abstract class Constants {
 	/**
 	 * 存储所有数据信息(根路径)
 	 */
-	public final static String ZOO_CONF_DATA = "/bidconfusers";
+	public final static String ZOO_CONF_DATA = "/confusers";
 
 	public final static String MD5_SALT="dejian.liu";
 
