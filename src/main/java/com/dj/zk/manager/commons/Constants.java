@@ -45,7 +45,7 @@ public abstract class Constants {
 	 */
 	public final static String ZOO_CONF_DATA = "/confusers";
 
-	public final static String MD5_SALT="dejian.liu";
+	public final static String MD5_SALT="zuiwoxing:";
 
 
 
