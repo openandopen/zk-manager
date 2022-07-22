@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
+import com.dj.zk.manager.config.prop.ZkProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +25,7 @@ import com.dj.zk.manager.model.dto.ConnectorDto;
 import com.dj.zk.manager.service.CommonService;
 
 /**
- * 
+ *
  * @description:列出所有连接者
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -33,32 +34,35 @@ import com.dj.zk.manager.service.CommonService;
 @Controller
 @RequestMapping(value = Constants.BASE_PATH + "connector")
 public class ConnectorAction {
-	
+
 	@Autowired
 	private CommonService commonService;
-	
+
+	@Autowired
+	private ZkProperties zkProperties;
+
  	@RequestMapping(value = "listconnectors", method = {RequestMethod.POST})
 	@ResponseBody
 	public PageView<ConnectorDto> listConnectors(HttpServletRequest request,HttpServletResponse response) throws IOException {
  		String host = request.getParameter("host");
  		String clientIp = request.getParameter("clientIp");
- 		
- 		InetSocketAddress address = Constants.getCacheZkHostMap().get(host);
+
+ 		InetSocketAddress address = zkProperties.getZkHost(host);
  		List<ConnectorDto> res = new ArrayList<ConnectorDto>();
  		if(address != null) {
  			res = commonService.listConnector(address,clientIp);
  		} else {
  			res = commonService.listConnector(clientIp);
  		}
- 
+
  		Collections.sort(res, new Comparator<ConnectorDto>() {
 			@Override
 			public int compare(ConnectorDto o1, ConnectorDto o2) {
 				if(o1.getZooHost().compareTo(o2.getZooHost()) > 0) {
 					return -1;
-				}  
+				}
 				if (o1.getZooHost().equals(o2.getZooHost())  && StringUtils.isNotEmpty(o1.getClientHostPort())
-						&& StringUtils.isNotEmpty(o2.getClientHostPort()) 
+						&& StringUtils.isNotEmpty(o2.getClientHostPort())
 						&& o1.getClientHostPort().compareTo(o2.getClientHostPort()) > 0) {
 					return 1;
 				}

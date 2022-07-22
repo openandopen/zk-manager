@@ -8,7 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ import com.dj.zk.manager.utils.DateUtils;
 import com.dj.zk.manager.utils.HttpClientProxy;
 
 /**
- * 
+ *
  * @description:监控Action
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -36,8 +37,8 @@ public class MonitorAction {
 
 	@Autowired
 	private CommonService commonService;
- 
-	
+
+
 	@RequestMapping(value="serverstatus", method = RequestMethod.GET)
 	@ResponseBody
 	public PageView<ServerStatusDto> listAllServerStatus(HttpServletRequest request,
@@ -46,12 +47,12 @@ public class MonitorAction {
 		List<ServerStatusDto> lists = commonService.listAllServerStatus();
 		pv.setItems(lists);
 		pv.setTotalCount(lists.size());
-		
+
 		return pv;
 	}
-	
-	
- 
+
+
+
 	@RequestMapping(value="monitorall", method = RequestMethod.POST)
 	@ResponseBody
 	public ResponseEntity monitorall(HttpServletRequest request,
@@ -71,7 +72,7 @@ public class MonitorAction {
 			buf.append("连接数:").append(sdto.getConnections()).append("\r\n");
 			buf.append("节点数:").append(sdto.getNodeCount()).append("\r\n");
 			buf.append("状态:").append(sdto.getStatus()).append("\r\n");
-			buf.append("版本:").append(sdto.getServerVersion()).append("\r\n");		
+			buf.append("版本:").append(sdto.getServerVersion()).append("\r\n");
 			if("dead".equals(sdto.getStatus())) {
 				Map<String, Object> parameters = new HashMap<String, Object>();
 				parameters.put("zkserver", sdto.getHostPort());
@@ -80,7 +81,7 @@ public class MonitorAction {
 				buf.append(failUrlRes).append("\r\n");
 			}
 		}
-		
+
 		res.setMessage(buf.toString());
 		return res;
 	}

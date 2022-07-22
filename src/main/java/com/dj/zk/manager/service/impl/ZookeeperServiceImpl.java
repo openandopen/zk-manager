@@ -5,9 +5,13 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang.StringUtils;
+import com.dj.zk.manager.config.prop.ZkProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.ZooDefs.Ids;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dj.zk.manager.commons.Constants;
@@ -18,54 +22,61 @@ import com.dj.zk.manager.utils.zookeeper.ZookeeperTransporter;
 import com.dj.zk.manager.utils.zookeeper.curator.CuratorZookeeperClient;
 import com.dj.zk.manager.utils.zookeeper.curator.CuratorZookeeperTransporter;
 
- 
-@Service
-public class ZookeeperServiceImpl implements ZookeeperService {
 
-	private static Logger logger = Logger.getLogger(ZookeeperServiceImpl.class);
-	
+@Slf4j
+@Service
+public class ZookeeperServiceImpl implements ZookeeperService, InitializingBean {
+
+
 	private ZookeeperTransporter zookeeperTransporter;
 
 	private CuratorZookeeperClient zookeeperClient;
 
-	public ZookeeperServiceImpl() {
+	@Autowired
+	private ZkProperties zkProperties;
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
 		zookeeperTransporter = new CuratorZookeeperTransporter();
-		String connections = Constants.getZookeeperConnectUrl();
+		String connections =zkProperties.getZkAddress();
 		if (StringUtils.isEmpty(connections)) {
 			throw new GeneralException("zookeeper connections can't null!");
 		}
-		if(StringUtils.isNotEmpty(Constants.getZooDigestSecret())) {
-			zookeeperClient = zookeeperTransporter.connect(connections, Constants.getZooDigestSecret().getBytes());
+
+		if(StringUtils.isNotEmpty(zkProperties.getSecret())) {
+			zookeeperClient = zookeeperTransporter.connect(connections,zkProperties.getSecret().getBytes());
 		} else {
 			zookeeperClient = zookeeperTransporter.connect(connections);
 		}
+		init();
 	}
-	
+
+
 	/**
 	 * 初始化根节点
 	 */
-	@PostConstruct
+
 	public void init() {
 		try {
-			if(!zookeeperClient.isExist(Constants.getDefaultRoot())) {
-				if(StringUtils.isEmpty(Constants.getZooDigestSecret())) {
-					zookeeperClient.create(Constants.getDefaultRoot(), true,false, null, Ids.OPEN_ACL_UNSAFE);
+			if(!zookeeperClient.isExist(zkProperties.getDefaultRoot())) {
+				if(StringUtils.isEmpty(zkProperties.getSecret())) {
+					zookeeperClient.create(zkProperties.getDefaultRoot(), true,false, null, Ids.OPEN_ACL_UNSAFE);
 				} else {
-					zookeeperClient.create(Constants.getDefaultRoot(), true,false, null, Ids.CREATOR_ALL_ACL);
+					zookeeperClient.create(zkProperties.getDefaultRoot(), true,false, null, Ids.CREATOR_ALL_ACL);
 				}
 			}
 			if(!zookeeperClient.isExist(Constants.ZOO_CONF_DATA)) {
-				if(StringUtils.isEmpty(Constants.getZooDigestSecret())) {
+				if(StringUtils.isEmpty(zkProperties.getSecret())) {
 					zookeeperClient.create(Constants.ZOO_CONF_DATA, true,false, null, Ids.OPEN_ACL_UNSAFE);
 				} else {
 					zookeeperClient.create(Constants.ZOO_CONF_DATA, true,false, null, Ids.CREATOR_ALL_ACL);
 				}
 			}
-			
+
 		}catch (Exception e) {
-			logger.error(e.getMessage(),e);
+			log.error(e.getMessage(),e);
 		}
-		
+
 	}
 
 	@Override
@@ -98,7 +109,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 				}
 			}
 		} catch (Exception e) {
-			logger.error(e.getMessage(),e);
+			log.error(e.getMessage(),e);
 		}
 		return listZks;
 	}
@@ -106,7 +117,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 	@Override
 	public boolean checkNodeExist(String path) {
 		return zookeeperClient.isExist(path);
- 
+
 	}
 
 	/**
@@ -118,19 +129,20 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 		if(flag) {
 			throw new GeneralException(path + " 已经存在!");
 		}
-		if(StringUtils.isEmpty(Constants.getZooDigestSecret())) {
+		if(StringUtils.isEmpty(zkProperties.getSecret())) {
 			return zookeeperClient.create(path, true, false, data,Ids.OPEN_ACL_UNSAFE);
 		}
 		return zookeeperClient.create(path, true, false, data,Ids.CREATOR_ALL_ACL);//ACL授权
 	}
 
+	@Override
 	public String creaetNodeDirect(String path,byte [] data) {
-		if(StringUtils.isEmpty(Constants.getZooDigestSecret())) {
+		if(StringUtils.isEmpty(zkProperties.getSecret())) {
 			zookeeperClient.create(path, true, false, data,Ids.OPEN_ACL_UNSAFE);
 		}
 		return zookeeperClient.create(path, true, false, data,Ids.CREATOR_ALL_ACL);//ACL授权
 	}
-	
+
 	@Override
 	public void deleteNode(String path) {
 		if(this.checkNodeExist(path)) {
@@ -142,7 +154,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 			zookeeperClient.delete(path);
 		}
 	}
- 
+
 	@Override
 	public void setData(String path, byte[] data) {
 		zookeeperClient.setData(path, data);
@@ -154,7 +166,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 		getAllChilds(path, listRes);
 		return listRes;
 	}
-	
+
 	private void getAllChilds(String path,List<String> listRes) {
 		List<String> listPaths = zookeeperClient.getChildren(path);
 		if(listPaths != null && listPaths.size() > 0){
@@ -178,7 +190,7 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 		return zookeeperClient.getData(path);
 	}
 
-	
+
 	@Override
 	public void copyNodes(String sourceNode,String sourcesPath, String targetPath) {
 		//第一步:创建第一个节点,如果节点存在,那么就进行数据覆盖。
@@ -194,9 +206,9 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 		} else {
 			this.creaetNodeDirect(firstNodePath, sourceData);//这样不会触发监听
 		}
- 
+
 		List<String> lists = getAllChilds(sourcesPath);
-	 
+
 	    if(lists != null) {
 	    	for (String chidpath : lists) {
 	    		byte [] data = this.getData(chidpath);
@@ -208,9 +220,10 @@ public class ZookeeperServiceImpl implements ZookeeperService {
 	    			this.creaetNodeDirect(newPath, data);
 	    		}
 			}
-	    	
+
 	    }
 	}
- 
+
+
 
 }

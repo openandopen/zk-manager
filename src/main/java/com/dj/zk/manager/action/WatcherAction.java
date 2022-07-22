@@ -11,7 +11,9 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+
+import com.dj.zk.manager.config.prop.ZkProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +28,7 @@ import com.dj.zk.manager.utils.json.JsonUtils;
 import com.dj.zk.manager.utils.response.ResponseUtils;
 
 /**
- * 
+ *
  * @description:zookeeper watcher
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -35,8 +37,10 @@ import com.dj.zk.manager.utils.response.ResponseUtils;
 @Controller
 @RequestMapping(value = Constants.BASE_PATH + "watcher")
 public class WatcherAction {
- 
-	
+
+
+	@Autowired
+	private ZkProperties zkProperties;
 
 	@Autowired
 	private CommonService commonService;
@@ -52,13 +56,13 @@ public class WatcherAction {
 
  	@RequestMapping(value = "clientInfo", method = {RequestMethod.GET})
 	public void hostInfo(HttpServletRequest request,HttpServletResponse response) {
- 		
+
 		List<ConnectorDto> listDtos = commonService.listConnector(null);
-		
+
 		Collections.sort(listDtos, new Comparator<ConnectorDto>() {
 			@Override
 			public int compare(ConnectorDto o1, ConnectorDto o2) {
-				if(StringUtils.isNotEmpty(o1.getClientHostPort()) 
+				if(StringUtils.isNotEmpty(o1.getClientHostPort())
 						&& StringUtils.isNotEmpty(o2.getClientHostPort())
 						&& o1.getClientHost().compareTo(o2.getClientHost()) > 0
 						) {
@@ -67,9 +71,9 @@ public class WatcherAction {
  				return 0;
 			}
 		});
-		
+
 		String [][] clientInfoData = new String[listDtos.size()][2];
-		
+
  		int index = 0;
  		Set<String> sets = new HashSet<String>();
 		for (ConnectorDto dto : listDtos) {
@@ -85,20 +89,20 @@ public class WatcherAction {
 			clientHostData[index][1] = host;
 			index++;
 		}
- 
+
 		StringBuffer buf = new StringBuffer();
 		buf.append("var clientInfoData = ").append(JsonUtils.toJson(clientInfoData, null, null, null)).append(";\r\n");
 		buf.append("var clientHostData = ").append(JsonUtils.toJson(clientHostData, null, null, null)).append(";\r\n");
          ResponseUtils.responseScript(response, buf.toString());
 	}
- 	
- 	
+
+
  	@RequestMapping(value = "listwatcherbynode", method = {RequestMethod.POST})
 	@ResponseBody
 	public List<WatcherNodeTreeDto> listConByNode(HttpServletRequest request,HttpServletResponse response) {
  		String host = request.getParameter("id");
  		List<WatcherNodeTreeDto> listRes = new ArrayList<WatcherNodeTreeDto>();
- 		InetSocketAddress address = Constants.getCacheZkHostMap().get(host);
+ 		InetSocketAddress address = zkProperties.getZkHost(host);
  		if(address != null) {
  			listRes = commonService.listAllWatcherNode(address);
   		} else {
@@ -110,6 +114,6 @@ public class WatcherAction {
 		}
  		return listRes;
  	}
- 	
-  
+
+
 }

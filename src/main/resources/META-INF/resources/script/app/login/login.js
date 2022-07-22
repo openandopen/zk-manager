@@ -24,7 +24,7 @@ LoginWin = function(config) {
 					}
 				}
 			});
- 
+
 	this.userPwd = new Ext.form.TextField({
 				name : "userPwd",
 				fieldLabel : "密		码",
@@ -59,9 +59,9 @@ LoginWin = function(config) {
 				}
 			}
 		}
-		
+
 	});
-	
+
 	this.codeImage = new Ext.Component({
         html :"<div><img src='" + Urls.imageUrl + "' style='position:absolute; left:155px; top:62px;width:78;height:24' />" + "</div>",
 	});
@@ -120,6 +120,7 @@ Ext.extend(LoginWin, Ext.Window, {
 								'verifyCode' : Ext.getCmp("verify_code_1").getValue()
 							},
 							success : function(response, options) {
+								console.log("success======",response)
 								Ext.getBody().unmask();
 								var data = response.responseText;
 								var res = eval("(" + data + ")");
@@ -137,6 +138,7 @@ Ext.extend(LoginWin, Ext.Window, {
 								}
 							},
 							failure : function(response, options) {
+								console.log("response=======",response)
 								Ext.getBody().unmask();
 							},
 							scope : this

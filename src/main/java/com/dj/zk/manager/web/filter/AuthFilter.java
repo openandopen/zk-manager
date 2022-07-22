@@ -11,24 +11,26 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 
 import com.dj.zk.manager.commons.Constants;
 import com.dj.zk.manager.commons.ResponseEntity;
-import com.dj.zk.manager.model.UserInfo;
+import com.dj.zk.manager.config.prop.UserInfo;
+
 import com.dj.zk.manager.utils.PrivilegeUtils;
 import com.dj.zk.manager.utils.json.JsonUtils;
 import com.dj.zk.manager.utils.response.ResponseUtils;
-
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
- * 
+ *
  * @description:
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
  * @Date	 2013-11-3 下午6:29:20
  */
+@Slf4j
 public class AuthFilter implements Filter {
 
 	/**
@@ -49,26 +51,29 @@ public class AuthFilter implements Filter {
 
 	/**
 	 * URL过滤,进行权限验证
-	 * @param servletRequest
+	 * @param req
 	 *            ServletRequest
-	 * @param servletResponse
+	 * @param res
 	 *            ServletResponse
-	 * @param chain
+	 * @param filterChain
 	 *            FilterChain
 	 */
+	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain filterChain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
-		
+
 		Object userObj = request.getSession().getAttribute(Constants.USER_INFO_SESSION);
 		String url = request.getRequestURI();
-   		if(matchUrls(request, excludeUrls) || url.endsWith("login.json") || url.endsWith("zoo/config.do")|| url.endsWith("verify/code.do")) {
+   		if(matchUrls(request, excludeUrls) || url.endsWith("login/login")
+				|| url.endsWith("zoo/config")|| url.endsWith("verify/code")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 		if(userObj == null) {
-			request.getRequestDispatcher(Constants.BASE_PATH+"page/login.do").forward(request, response);
+ 		  request.getRequestDispatcher(Constants.BASE_PATH+"page/login").forward(request, response);
+ 			return;
 		} else {
 			UserInfo userInfo = (UserInfo)userObj;
 			if(StringUtils.isNotEmpty(userInfo.getUserName()) && StringUtils.isNotEmpty(userInfo.getUserPwd())) {
@@ -77,7 +82,7 @@ public class AuthFilter implements Filter {
 					if(StringUtils.isNotEmpty(referer)) {
 						response.sendRedirect(referer);
 					} else {
-						request.getRequestDispatcher(Constants.BASE_PATH+"page/main.do").forward(request, response);
+						request.getRequestDispatcher(Constants.BASE_PATH+"page/main").forward(request, response);
 						return;
 					}
 				}
@@ -91,9 +96,9 @@ public class AuthFilter implements Filter {
 					filterChain.doFilter(request, response);
 				}
 			} else {
-				request.getRequestDispatcher(Constants.BASE_PATH+"page/main.do").forward(request, response);
+				request.getRequestDispatcher(Constants.BASE_PATH+"page/main").forward(request, response);
 			}
-		}  
+		}
 	}
 
 	/**
@@ -123,15 +128,14 @@ public class AuthFilter implements Filter {
 				if (path.matches(regx)) {
 					return true;
 				}
-					
+
 			}
 		} catch (Throwable localThrowable) {
 		}
 		return false;
 	}
 
-	public void destroy() {
-	}
- 
- 
+
+
+
 }

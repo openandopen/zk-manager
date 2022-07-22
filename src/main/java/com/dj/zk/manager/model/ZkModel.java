@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ZkModel implements Serializable{
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = -1464340772711209136L;
 
@@ -18,7 +18,7 @@ public class ZkModel implements Serializable{
 	 * 节点名称
 	 */
 	private String text;
-	
+
 	/**
 	 * 路径
 	 */
@@ -28,14 +28,14 @@ public class ZkModel implements Serializable{
 	 * 是否子节点
 	 */
 	private boolean leaf;
-	
+
 	/**
 	 * 数据
 	 */
 	private String data;
-	
+
 //	private boolean checked = true;
-	
+
 	/**
 	 * 子节点集合
 	 */
@@ -81,14 +81,6 @@ public class ZkModel implements Serializable{
 		this.data = data;
 	}
 
-//	public boolean isChecked() {
-//		return checked;
-//	}
-//
-//	public void setChecked(boolean checked) {
-//		this.checked = checked;
-//	}
-	
-	
-	
+
+
 }

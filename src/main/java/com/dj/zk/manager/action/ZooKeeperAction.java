@@ -6,7 +6,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+
+import com.dj.zk.manager.config.prop.ZkProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,7 +26,7 @@ import com.dj.zk.manager.utils.response.ResponseUtils;
 
 
 /**
- * 
+ *
  * @description:zookeeper菜单树
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -37,10 +39,13 @@ public class ZooKeeperAction {
 	@Autowired
 	private ZookeeperService zookeeperService;
 
+	@Autowired
+	private ZkProperties zkProperties;
+
 	@RequestMapping(value = { "config" }, method = { RequestMethod.POST,RequestMethod.GET })
 	public ModelAndView config(HttpServletRequest request,
 			HttpServletResponse response, ModelMap modelMap) {
-		String path = Constants.getDefaultRoot();
+		String path =zkProperties.getRootPath();
 		if (!path.startsWith("/")) {
 			path = "/" + path;
 		}
@@ -158,25 +163,25 @@ public class ZooKeeperAction {
 	     String sourceNodePath = request.getParameter("sourceNodePath");
 	     String targetNodePath = request.getParameter("targetNodePath");
 	     String sourceNode = request.getParameter("sourceNode");
-	     
+
 	     if(StringUtils.isEmpty(sourceNode)) {
 		 		throw new GeneralException("源节点名称不能为空！");
 		 }
-	     
+
 	 	if(StringUtils.isEmpty(sourceNodePath)) {
 			throw new GeneralException("源节点不能为空！");
 		}
 	 	if(StringUtils.isEmpty(targetNodePath)) {
 	 		throw new GeneralException("目标节点不能为空！");
 	 	}
-	 	
+
 	 	if(!zookeeperService.checkNodeExist(sourceNodePath)) {
-			throw new GeneralException("源节点不存在！"); 
+			throw new GeneralException("源节点不存在！");
 		}
 		if(!zookeeperService.checkNodeExist(targetNodePath)) {
-			throw new GeneralException("目标节点不存在！"); 
+			throw new GeneralException("目标节点不存在！");
 		}
-		
+
 	 	zookeeperService.copyNodes(sourceNode,sourceNodePath, targetNodePath);
 		String msg = "{'msg':'ok'}";
 		modelMap.addAttribute("msg", msg);

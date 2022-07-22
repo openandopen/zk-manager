@@ -21,7 +21,7 @@ Ext
 									border : true,
 									frame : false,
 									bodyStyle : " background-image:url('./script/lib/extjs3/resources/images/bg_config.jpg');padding:10px 5px 0;text-align: center;border: 20pt;cursor: pointer;",
-									html : ' <marquee behavior="scroll" onclick="alert(\'if you any question please contact beipiao83@163.com!\')" style="font-weight: bold; font-size: 30px;font-family:宋体;font-color:#000000;">Zookeeper 管 理 系 统</marquee> '
+									html : ' <marquee behavior="scroll" onclick="alert(\'if you any question please contact zuiwoxing@qq.com!\')" style="font-weight: bold; font-size: 30px;font-family:宋体;font-color:#000000;">ZK 管 理 系 统</marquee> '
 								},
 								{
 									region : 'center',

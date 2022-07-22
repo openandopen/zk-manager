@@ -15,8 +15,9 @@ import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.commons.lang.math.RandomUtils;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -27,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.dj.zk.manager.commons.Constants;
 
 /**
- * 
+ *
  * @description: 验证码生成
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -57,22 +58,22 @@ public class AuthCodeAction {
 			ImageIO.write(image, "JPEG",os);
  		} catch (Exception e) {
 			logger.error(e.getMessage(),e);
-		} 
+		}
 		return null;
 	}
 
-	
+
 	public static String createRandomStr() {
 		StringBuffer buf = new StringBuffer();
 		buf.append(RandomStringUtils.random(1, words));
 		for(int i = 0; i < 3; i++) {
-			buf.append(RandomUtils.nextInt(10));
+			buf.append(RandomUtils.nextInt(1,10));
 		}
         buf.append(RandomStringUtils.random(1, words));
-	
+
 		return buf.toString();
 	}
-	
+
 	public static BufferedImage createVerifyImage(String word,int width,int height) {
 		BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); // 创建BufferedImage类的对象
 		Graphics g = image.getGraphics(); // 创建Graphics类的对象
@@ -99,7 +100,7 @@ public class AuthCodeAction {
 		g.drawString(String.valueOf(word), 10, 30);
 		return image;
 	}
-	
+
 	private static Color getRandColor(int s, int e) {
 		Random random = new Random();
 		if (s > 255)
@@ -111,16 +112,7 @@ public class AuthCodeAction {
 		int b = s + random.nextInt(e - s);
 		return new Color(r, g, b);
 	}
-	
-	public static void main(String[] args) throws FileNotFoundException, IOException {
-//		BufferedImage image = createVerifyImage(createRandomStr(), 100,50);
-//		ImageIO.write(image, "JPEG", new FileOutputStream(new File("G:/liu.jpeg")));
-//		System.out.println((char)122);
-//		System.out.println((char)97);
-//		System.out.println((char)65);
-//		System.out.println((char)90);
-		System.out.println(RandomStringUtils.random(2, words));
-	 
-	}
-	
+
+
+
 }

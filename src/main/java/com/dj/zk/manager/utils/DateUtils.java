@@ -1,6 +1,8 @@
 
 package com.dj.zk.manager.utils;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,23 +12,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.time.DateFormatUtils;
+
 
 /**
- * 
+ *
  * @description:
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
  * @Date	 2013-11-3 下午6:28:37
  */
 public abstract class DateUtils {
-	
+
 	/**
-	 * 指定DateFormat的key值 
-	 * @see cn.bidlink.framework.web.view.json.BidMappingJacksonJsonView
+	 * 指定DateFormat的key值
+
 	 */
 	public static final String DATE_FORMAT = "DATE_FORMAT";
-	
+
 	public static final String DATE = "yyyy-MM-dd";
 	public static final String DATE_HH_MM = "yyyy-MM-dd HH:mm";
 	public static final String DATE_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
@@ -34,12 +36,12 @@ public abstract class DateUtils {
 	public static final String DATE_HH_MM_SS_Z2 = "yyyy-MM-dd'T'HH:mm:ssZ";
 	public static final String DATE_HH_MM_SS_Z3 = "yyyy-MM-dd'T'HH:mm:ssz";
 	public static final String DATE_HH_MM_SS_Z4 = "yyyy-MM-dd'T'HH:mm:ss";
-	
+
 	public static final String DATE_HH_MM_SS_A = "MM/dd/yyyy HH:mm:ss a";
 	public static final String DATE_HHMMSS = "yyyyMMddHHmmss";
-	
+
 	private static List<DateFormat> formats = new ArrayList<DateFormat>();
-	
+
 	static {
 		/**alternative formats*/
 		formats.add(new SimpleDateFormat(DATE_HH_MM_SS));
@@ -84,14 +86,14 @@ public abstract class DateUtils {
 		}
 		return date;
 	}
-	
+
 	public static Date parseExp(String str, String pattern) throws Exception{
 		DateFormat format = new SimpleDateFormat(pattern);
 		Date date = null;
 		date = format.parse(str);
 		return date;
 	}
-	
+
 	/**
 	 * 日期类型转字符串
 	 * @param date 日期
@@ -101,7 +103,7 @@ public abstract class DateUtils {
 		SimpleDateFormat df = new SimpleDateFormat(DATE);
 		return df.format(date);
 	}
-	
+
 	/**
 	 * 日期类型转字符串
 	 * @param date 日期
@@ -112,7 +114,7 @@ public abstract class DateUtils {
 		if(date==null) return "";
 		return DateFormatUtils.format(date, pattern);
 	}
-	
+
 	/**
 	 * 将某个时间范围按天进行切分，未满一天的按一天算
 	 * @param startDate 开始时间
@@ -194,7 +196,7 @@ public abstract class DateUtils {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 得到两个时间的差额
 	 * @param date 时间
@@ -247,7 +249,7 @@ public abstract class DateUtils {
 				String.valueOf(calendar.get(Calendar.MILLISECOND)));
 		return stringCalendar;
 	}
-	
+
 	/**
      * 比较时间差 1小时内的显示：**　分钟前，例如：25　分钟前 1小时前（１天内的）：今天　**时：**分，例如：　08：17
      * 1天前的（当前年）：*月*号　**时：**分，例如：05-09　23：58
@@ -258,21 +260,21 @@ public abstract class DateUtils {
     	now.setTime(_now);
     	Calendar date = Calendar.getInstance();
     	date.setTime(_date);
-    	
+
     	int nowY = now.get(Calendar.YEAR);
     	int dateY = date.get(Calendar.YEAR);
-    	
+
     	int nowM = now.get(Calendar.MONTH);
     	int dateM = date.get(Calendar.MONTH);
-    	
+
     	int nowD = now.get(Calendar.DAY_OF_MONTH);
     	int dateD = date.get(Calendar.DAY_OF_MONTH);
-    	
-    	
+
+
     	long l = now.getTimeInMillis() - date.getTimeInMillis();
         long m = nowM - dateM;
         long day = nowD - dateD;
-        
+
         int dateHour = date.get(Calendar.HOUR_OF_DAY);
         int dateMinutes = date.get(Calendar.MINUTE);
 
@@ -304,11 +306,11 @@ public abstract class DateUtils {
             ret = "1  分前";
         return ret;
     }
-	
+
     public static long getFormatedTime(long time) {
     	return getFormatedTime(new Date(time));
     }
-    
+
     public static long getFormatedTime(Date date) {
     	if(date == null) {
     		return 0;
@@ -316,12 +318,11 @@ public abstract class DateUtils {
     	SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
     	return new Long(dateFormat.format(date)).longValue();
     }
-    
+
     /**
      * @description  给定时间差解析成中文表示(只计算过去的某个时间和当前时间的差)
      * <p>如"2小时32分"</p>
-     * @param deltaMill	时差毫秒表示
-     * @return
+      * @return
      */
     public static String subtractParse(long deltaMillis, String format) {
     	if(deltaMillis<=0) {
@@ -349,7 +350,7 @@ public abstract class DateUtils {
 		    return res.toString();
     	}
     }
-    
+
     /**
      * @description  解析过去某个时间和当前时间的差的中文表示
      * <p>如"2小时32分"</p>
@@ -364,7 +365,7 @@ public abstract class DateUtils {
     	}
     	return "";
     }
-    
-    
- 
+
+
+
 }

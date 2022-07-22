@@ -9,8 +9,8 @@
 <title>命令执行</title>
 
 
- 
- <script type="text/javascript" src="<%=basePathNoSplit+Constants.BASE_PATH%>command/hostinfo.do"></script>
+
+ <script type="text/javascript" src="<%=basePathNoSplit+Constants.BASE_PATH%>command/hostinfo"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/command/command_form.js"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/command/control.js"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/command/command_layout.js"></script>

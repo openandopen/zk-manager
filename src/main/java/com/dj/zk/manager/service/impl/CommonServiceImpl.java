@@ -11,9 +11,13 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+
+import com.dj.zk.manager.config.prop.ZkProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.zookeeper.client.FourLetterWordMain;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.dj.zk.manager.commons.Constants;
@@ -24,41 +28,43 @@ import com.dj.zk.manager.service.CommonService;
 import com.dj.zk.manager.utils.DateUtils;
 
 
+@Slf4j
 @Service
 public class CommonServiceImpl implements CommonService {
 
-	private static Logger logger = Logger.getLogger(CommonServiceImpl.class);
- 
+	@Autowired
+	private ZkProperties zkProperties;
+
 	@Override
 	public List<ConnectorDto> listConnector(InetSocketAddress address,String clientIp) {
 			String res = getResDataByInetAddressCommand(address,"cons");
  		    return parseConnectorsRes(res, address,clientIp);
 	}
- 
-	
+
+
 	private static String getResDataByInetAddressCommand(InetSocketAddress address,String command) {
 		try {
 			return FourLetterWordMain.send4LetterWord(address.getHostName(),address.getPort(),command);
 		} catch (IOException e) {
-			logger.error(e.getMessage(),e);
+			log.error(e.getMessage(),e);
 		}
 		return "";
 	}
-	
+
 
 	@Override
 	public List<ConnectorDto> listConnector(String clientIp){
 		List<ConnectorDto> listRes = new ArrayList<ConnectorDto>();
-		List<InetSocketAddress> lists = Constants.getZooAddresses();
+		List<InetSocketAddress> lists = zkProperties.getZooAddresses();
 		for (InetSocketAddress inetSocketAddress : lists) {
 			listRes.addAll(listConnector(inetSocketAddress,clientIp));
 		}
  		return listRes;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param res
 	 * @param address
 	 * @return Map<sessionId,ConnectorDto>
@@ -78,9 +84,9 @@ public class CommonServiceImpl implements CommonService {
 		}
 		return map;
 	}
-	
- 
-	
+
+
+
 	public List<ConnectorDto> parseConnectorsRes(String res,InetSocketAddress address,String clientIp) {
 		List<ConnectorDto> listRes = new ArrayList<ConnectorDto>();
 		if(StringUtils.isEmpty(res)) {
@@ -93,9 +99,9 @@ public class CommonServiceImpl implements CommonService {
 			}
 			ConnectorDto dto = parseSingleData(line);
 			if(dto != null) {
-				
+
 				dto.setZooHost(address.toString());
-				
+
 				if(StringUtils.isNotEmpty(clientIp)) {
 					if(clientIp.equals(dto.getClientHost())) {
 						listRes.add(dto);
@@ -103,19 +109,19 @@ public class CommonServiceImpl implements CommonService {
 				} else {
 					listRes.add(dto);
 				}
-				
-				
+
+
 			}
 		}
 		return listRes;
 	}
-	
+
 	/**
-	 * @param res
+	 * @param line
 	 * @return
 	 */
 	private static ConnectorDto parseSingleData(String line) {
-		 
+
  		ConnectorDto cd = new ConnectorDto();
 		line = line.replaceAll("/", "").replaceAll("\\[.\\]","").replaceAll("\\)","");
 		String [] ary = line.split("\\(");
@@ -133,22 +139,22 @@ public class CommonServiceImpl implements CommonService {
 		if(StringUtils.isNotEmpty(lresp)) {
 			cd.setLastEstTime(Long.valueOf(lresp));
 		}
-		
+
 		String sent = map.get("sent");
 		if(StringUtils.isNotEmpty(sent)) {
 			cd.setSent(Long.valueOf(sent));
 		}
-		
+
 		String recved = map.get("recved");
 		if(StringUtils.isNotEmpty(recved)) {
 			cd.setRecved(Long.valueOf(recved));
 		}
-		
+
 		String sid = map.get("sid");
 		if(StringUtils.isNotEmpty(sid)) {
 			cd.setSessionId(sid);
 		}
- 
+
  		return cd;
 	}
 
@@ -162,7 +168,7 @@ public class CommonServiceImpl implements CommonService {
 		return map;
 	}
 
-	
+
 
 
 	@Override
@@ -175,8 +181,8 @@ public class CommonServiceImpl implements CommonService {
 			Map<String, ConnectorDto> nodeMap = new HashMap<String, ConnectorDto>();
 			String res = getResDataByInetAddressCommand(address,"cons");
 			nodeMap.putAll(parseConectorsToMap(res, address));
- 
-			
+
+
 			/**
 			 * key = node
 			 * value = List<sessionId>
@@ -185,7 +191,7 @@ public class CommonServiceImpl implements CommonService {
 			String wchp = getResDataByInetAddressCommand(address,"wchp");
 			nodeWatcherMap.putAll(parseLineToMap(address,wchp));
 
-			
+
 			/**
 			 * 信息组合
 			 */
@@ -212,23 +218,23 @@ public class CommonServiceImpl implements CommonService {
 					}
 					 dto.setChildren(childs);
 				 }
-				 
+
 				 dto.setSessionTime("总计:"+DateUtils.subtractParse(costTime, "d-H-m-s"));
 				 dto.setClientIpHost("总计:【"+dto.getChildren().size()+"】个");
 				 resList.add(dto);
 			}
-			
-		
+
+
 			return resList;
 	}
 
-	
-	
+
+
 	@Override
 	public List<WatcherNodeTreeDto> listAllWatcherNode() {
 		 List<WatcherNodeTreeDto> resList = new ArrayList<WatcherNodeTreeDto>();
-		 
-		List<InetSocketAddress> lists = Constants.getZooAddresses();
+
+		List<InetSocketAddress> lists =zkProperties.getZooAddresses();
 		/**
 		 * key = sessionId
 		 * value = ConnectorDto
@@ -238,7 +244,7 @@ public class CommonServiceImpl implements CommonService {
 			String res = getResDataByInetAddressCommand(address,"cons");
 			nodeMap.putAll(parseConectorsToMap(res, address));
 		}
-		
+
 		/**
 		 * key = node
 		 * value = List<sessionId>
@@ -248,7 +254,7 @@ public class CommonServiceImpl implements CommonService {
 			String res = getResDataByInetAddressCommand(address,"wchp");
 			nodeWatcherMap.putAll(parseLineToMap(address,res));
 		}
-		
+
 		/**
 		 * 信息组合
 		 */
@@ -284,12 +290,12 @@ public class CommonServiceImpl implements CommonService {
 	}
 
 
-	
+
 	@Override
 	public List<WatcherNodeTreeDto> listAllByClient(String clientHost) {
 		 List<WatcherNodeTreeDto> resList = new ArrayList<WatcherNodeTreeDto>();
-		List<InetSocketAddress> lists = Constants.getZooAddresses();
- 
+		List<InetSocketAddress> lists = zkProperties.getZooAddresses();
+
 		/**
 		 * key = sessionId
 		 * value = ConnectorDto
@@ -299,20 +305,20 @@ public class CommonServiceImpl implements CommonService {
 			String res = getResDataByInetAddressCommand(address,"cons");
 			nodeMap.putAll(parseConectorsToMap(res, address));
 		}
-		
-		
-		
+
+
+
 		/**
 		 * key = sessionId
 		 * value = List<nodePath>
 		 */
-		
+
 		Map<String, List<String>> nodeWatcherMap = new HashMap<String, List<String>>();
 		for (InetSocketAddress address : lists) {
 			String res = getResDataByInetAddressCommand(address,"wchc");
 			nodeWatcherMap.putAll(parseLineKeySessionToMap(res));
 		}
-		
+
 		/**
 		 * 数据组装
 		 */
@@ -320,15 +326,15 @@ public class CommonServiceImpl implements CommonService {
 			Map.Entry<String, List<String>> entry = it.next();
 			List<String> lis = entry.getValue();
 			String sessionId = entry.getKey();
-			
-			
+
+
 			ConnectorDto cd = nodeMap.get(sessionId);
-			
+
 			//数据按客户端来过滤
 			if(StringUtils.isNotEmpty(clientHost) && cd != null && !clientHost.equals(cd.getClientHostPort())) {
 				continue;
 			}
-			
+
 			WatcherNodeTreeDto dto = new WatcherNodeTreeDto();
 			if(cd != null) {
 				dto.setNode(cd.getClientHostPort());  //反过来将 clientHostIpPort作为node显示
@@ -337,7 +343,7 @@ public class CommonServiceImpl implements CommonService {
 			} else {
 				dto.setNode(sessionId);
 			}
-			
+
 			if(lis != null && lis.size() >0) {
 				List<WatcherNodeTreeDto> childs = new ArrayList<WatcherNodeTreeDto>();
 				for (String s : lis) {
@@ -348,7 +354,7 @@ public class CommonServiceImpl implements CommonService {
 						tmpDto.setZkHost("");
 						tmpDto.setSessionTime("");
 					}
-					
+
 					childs.add(tmpDto);
 				}
 				dto.setChildren(childs);
@@ -363,9 +369,9 @@ public class CommonServiceImpl implements CommonService {
  		return resList;
 	}
 
-	
-	
-	
+
+
+
 	/**
 	 * @description 解析单行
 	 * @param address
@@ -373,7 +379,7 @@ public class CommonServiceImpl implements CommonService {
 	 * @return
 	 */
 	private  Map<String, List<String>> parseLineToMap(InetSocketAddress address,String res) {
-		String [] arys = res.split("\n");		 
+		String [] arys = res.split("\n");
 	    Pattern p = Pattern.compile("/.*");
 	    Map<String, List<String>> tmpMap = new HashMap<String, List<String>>();
 	    List<String> ls = null;
@@ -390,15 +396,15 @@ public class CommonServiceImpl implements CommonService {
  	    }
 	    return tmpMap;
 	}
-	
-	
+
+
 	/**
-	 * 
+	 *
 	 * @param res
 	 * @return Map<sessionid,nodes>
 	 */
 	private static  Map<String, List<String>> parseLineKeySessionToMap(String res) {
-		String [] arys = res.split("\n");		 
+		String [] arys = res.split("\n");
 	    Pattern p = Pattern.compile("/.*");
 	    Map<String, List<String>> tmpMap = new ConcurrentHashMap<String, List<String>>();
 	    List<String> ls = null;
@@ -423,39 +429,16 @@ public class CommonServiceImpl implements CommonService {
 				tmpMap.remove(entry.getKey());
 			}
  	     }
-	    
+
 	    return tmpMap;
 	}
-	
 
-	public static void main(String[] args) {
-		List<InetSocketAddress> addresses = Constants.getZooAddresses();
-		InetSocketAddress a = addresses.get(0);
-//		String res = getResDataByInetAddressCommand(a,"cons");
-//		 Map<String, ConnectorDto> maps = 	parseConectorsToMap(res, addresses.get(0));
-//		for(Iterator<Map.Entry<String, ConnectorDto>> it  = maps.entrySet().iterator();it.hasNext();) {
-//			Map.Entry<String, ConnectorDto> entry = it.next();
-//			System.out.println(entry.getKey()+"======"+ToStringBuilder.reflectionToString(entry.getValue()));
-//		}
-     
-		String res = getResDataByInetAddressCommand(a,"wchc");
-		System.out.println(res);
-		System.out.println("======================================");
-		Map<String, List<String>> maps = parseLineKeySessionToMap(res);
-		
-		for(Iterator<Map.Entry<String, List<String>>> it  = maps.entrySet().iterator();it.hasNext();) {
-			Map.Entry<String, List<String>> entry = it.next();
-			List<String> lis = entry.getValue();
-			System.out.println(entry.getKey()+"======"+ Arrays.toString(lis.toArray(new String[lis.size()])));
-	     }
- 	
-	}
 
 
 	@Override
 	public List<ServerStatusDto> listAllServerStatus() {
 		List<ServerStatusDto> lists = new ArrayList<ServerStatusDto>();
-		List<InetSocketAddress> listsNets = Constants.getZooAddresses();
+		List<InetSocketAddress> listsNets = zkProperties.getZooAddresses();
 		for (InetSocketAddress inet : listsNets) {
 			String res = getResDataByInetAddressCommand(inet,"srvr");
 			String [] ary = res.split("\n");
@@ -486,7 +469,7 @@ public class CommonServiceImpl implements CommonService {
 //	Zxid: 0x6300113b4c
 //	Mode: follower
 //	Node count: 1334
- 
-	
- 
+
+
+
 }

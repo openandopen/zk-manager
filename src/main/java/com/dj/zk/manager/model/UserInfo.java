@@ -2,31 +2,32 @@ package com.dj.zk.manager.model;
 
 
 /**
- * 
+ *
  * @description:角色与zoopath资源权限
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
  * @Date	 2013-11-3 下午6:25:43
  */
+/*
 public class UserInfo {
-	
+
 	private Long id;
-	
+
 	private String userName;
-	
+
 	private String userPwd;
-	
+
 	private long createTime;
-	
+
 	private long updateTime;
-	
- 
+
+
 	private Integer userType = Integer.valueOf(0);
-	
+
 	public UserInfo() {
 	}
-	
-	
+
+
 
 	public UserInfo(String userName, String userPwd) {
 		super();
@@ -73,13 +74,14 @@ public class UserInfo {
 	public void setUpdateTime(long updateTime) {
 		this.updateTime = updateTime;
 	}
- 
+
 	public Integer getUserType() {
 		return userType;
 	}
- 
+
 	public void setUserType(Integer userType) {
 		this.userType = userType;
 	}
- 
+
 }
+*/

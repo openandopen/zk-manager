@@ -9,7 +9,7 @@
 
 <title>配置管理</title>
 
-<script type="text/javascript" src="<%=basePathNoSplit+Constants.BASE_PATH%>zoo/config.do"></script>
+<script type="text/javascript" src="<%=basePathNoSplit+Constants.BASE_PATH%>zoo/config"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/zoo/control.js"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/zoo/zooform.js"></script>
 <script type="text/javascript" src="<%=basePath%>script/app/zoo/zootree.js"></script>

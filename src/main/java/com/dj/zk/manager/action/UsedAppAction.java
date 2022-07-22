@@ -10,7 +10,7 @@ import java.util.Properties;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ import com.dj.zk.manager.utils.response.ResponseUtils;
 
 
 /**
- * 
+ *
  * @description:已使用应用Action 用来做统一配置管理
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -38,12 +38,12 @@ import com.dj.zk.manager.utils.response.ResponseUtils;
 @Controller
 @RequestMapping(value = Constants.BASE_PATH + "used")
 public class UsedAppAction {
-	
+
 	private static Logger logger = Logger.getLogger(UsedAppAction.class);
-	
+
 	@Autowired
 	private ZookeeperService zookeeperService;
-	
+
 	private static Properties loadPropFromByte(Properties p,byte [] data) {
 		try {
 			p.load(new ByteArrayInputStream(data));
@@ -52,16 +52,16 @@ public class UsedAppAction {
 		}
 		return p;
 	}
-	
+
 	@RequestMapping(value = { "query" }, method = { RequestMethod.POST ,RequestMethod.GET})
 	public ModelAndView query(HttpServletRequest request,HttpServletResponse response, ModelMap modelMap) {
 		String serverIp = request.getParameter("serverIp");
 		String configPath = request.getParameter("configPath");
-		
+
 		List<String> lists = zookeeperService.getAllChilds(Constants.ZOO_CONF_DATA);
 		List<ConfigUsed> listcus = new ArrayList<ConfigUsed>();
 		Properties p = new Properties();
-		
+
 		if(lists != null && lists.size() > 0) {
 			for (String path : lists) {
 				byte [] data = zookeeperService.getData(path);
@@ -93,7 +93,7 @@ public class UsedAppAction {
 				p.clear();
 			}
 		}
-		
+
 		Collections.sort(listcus, new Comparator<ConfigUsed>() {
 
 			@Override
@@ -103,11 +103,11 @@ public class UsedAppAction {
  				 } else {
  					 return 1;
  				 }
- 				
+
 			}
-			
+
 		});
-		
+
 		PageView<ConfigUsed> pv = new PageView<ConfigUsed>(lists.size(), listcus);
         String res = JsonUtils.toJson(pv, null,null, DateUtils.DATE_HH_MM_SS);
 		ResponseUtils.responseJson(response, res);

@@ -3,6 +3,12 @@ package com.dj.zk.manager.utils.zookeeper.curator;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.framework.api.CuratorWatcher;
+import org.apache.curator.framework.state.ConnectionState;
+import org.apache.curator.framework.state.ConnectionStateListener;
+import org.apache.curator.retry.RetryNTimes;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.WatchedEvent;
 import org.apache.zookeeper.ZooKeeper;
@@ -12,16 +18,16 @@ import org.apache.zookeeper.data.Stat;
 import com.dj.zk.manager.utils.zookeeper.ChildListener;
 import com.dj.zk.manager.utils.zookeeper.StateListener;
 import com.dj.zk.manager.utils.zookeeper.support.AbstractZookeeperClient;
-import com.netflix.curator.framework.CuratorFramework;
+/*import com.netflix.curator.framework.CuratorFramework;
 import com.netflix.curator.framework.CuratorFrameworkFactory;
 import com.netflix.curator.framework.CuratorFrameworkFactory.Builder;
 import com.netflix.curator.framework.api.CuratorWatcher;
 import com.netflix.curator.framework.state.ConnectionState;
 import com.netflix.curator.framework.state.ConnectionStateListener;
-import com.netflix.curator.retry.RetryNTimes;
+import com.netflix.curator.retry.RetryNTimes;*/
 
 /**
- * 
+ *
  * @description:
  * @version  Ver 1.0
  * @author   <a href="mailto:zuiwoxing@gmail.com">dejian.liu</a>
@@ -36,7 +42,7 @@ public class CuratorZookeeperClientImpl extends
 	public CuratorZookeeperClientImpl(String connections, byte[] authoritys) {
 		super(connections, authoritys);
 		try {
-			Builder builder = CuratorFrameworkFactory.builder()
+			CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
 					.connectString(connections)
 					.retryPolicy(new RetryNTimes(Integer.MAX_VALUE, 2000)) // 设置为永久重试，每隔2秒重试一次
 					.connectionTimeoutMs(30000);// 30秒连接超时
@@ -48,6 +54,7 @@ public class CuratorZookeeperClientImpl extends
 			client = builder.build();
 			client.getConnectionStateListenable().addListener(
 					new ConnectionStateListener() {
+						@Override
 						public void stateChanged(CuratorFramework client,
 								ConnectionState state) {
 							if (state == ConnectionState.LOST) {
@@ -71,7 +78,7 @@ public class CuratorZookeeperClientImpl extends
 	/**
 	 * @param path
 	 *            路径
-	 * @param ZooDefs
+	 * @param acls
 	 *            .Ids.OPEN_ACL_UNSAFE 权限
 	 */
 	public void createPersistent(String path, ArrayList<ACL> acls) {
@@ -88,7 +95,7 @@ public class CuratorZookeeperClientImpl extends
 	/**
 	 * @param path
 	 *            路径
-	 * @param ZooDefs
+	 * @param acls
 	 *            .Ids.OPEN_ACL_UNSAFE 权限
 	 */
 	public void createEphemeral(String path, ArrayList<ACL> acls) {
@@ -100,6 +107,7 @@ public class CuratorZookeeperClientImpl extends
 		}
 	}
 
+	@Override
 	public void delete(String path) {
 		try {
 			client.delete().forPath(path);
@@ -108,6 +116,7 @@ public class CuratorZookeeperClientImpl extends
 		}
 	}
 
+	@Override
 	public List<String> getChildren(String path) {
 		try {
 			return client.getChildren().forPath(path);
@@ -116,10 +125,12 @@ public class CuratorZookeeperClientImpl extends
 		}
 	}
 
+	@Override
 	public boolean isConnected() {
 		return client.getZookeeperClient().isConnected();
 	}
 
+	@Override
 	public void doClose() {
 		client.close();
 	}
@@ -136,6 +147,7 @@ public class CuratorZookeeperClientImpl extends
 			this.listener = null;
 		}
 
+		@Override
 		public void process(WatchedEvent event) throws Exception {
 			if (listener != null) {
 				listener.childChanged(event.getPath(), client.getChildren()
@@ -144,11 +156,13 @@ public class CuratorZookeeperClientImpl extends
 		}
 	}
 
+	@Override
 	public CuratorWatcher createTargetChildListener(String path,
 			ChildListener listener) {
 		return new CuratorWatcherImpl(listener);
 	}
 
+	@Override
 	public List<String> addTargetChildListener(String path,
 			CuratorWatcher listener) {
 		try {
@@ -158,6 +172,7 @@ public class CuratorZookeeperClientImpl extends
 		}
 	}
 
+	@Override
 	public void removeTargetChildListener(String path, CuratorWatcher listener) {
 		((CuratorWatcherImpl) listener).unwatch();
 	}

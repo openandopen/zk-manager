@@ -11,7 +11,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -44,7 +45,7 @@ public class HttpClientProxy {
 	 * <pre>
 	 * 发送带参数的GET的HTTP请求
 	 * </pre>
-	 * 
+	 *
 	 * @param reqUrl
 	 *            HTTP请求URL
 	 * @param parameters
@@ -108,7 +109,7 @@ public class HttpClientProxy {
 	 * <pre>
 	 * 发送不带参数的GET的HTTP请求
 	 * </pre>
-	 * 
+	 *
 	 * @param reqUrl
 	 *            HTTP请求URL
 	 * @return HTTP响应的字符串
@@ -179,7 +180,7 @@ public class HttpClientProxy {
 	 * <pre>
 	 * 发送带参数的POST的HTTP请求
 	 * </pre>
-	 * 
+	 *
 	 * @param reqUrl
 	 *            HTTP请求URL
 	 * @param parameters
@@ -251,7 +252,7 @@ public class HttpClientProxy {
 
 	/**
 	 * @return 读取数据超时(毫秒)
-	 * 
+	 *
 	 */
 	public static int getReadTimeOut() {
 		return readTimeOut;
@@ -259,7 +260,7 @@ public class HttpClientProxy {
 
 	/**
 	 * @return 请求编码
-	 * 
+	 *
 	 */
 	public static String getRequestEncoding() {
 		return requestEncoding;
@@ -268,7 +269,7 @@ public class HttpClientProxy {
 	/**
 	 * @param connectTimeOut
 	 *            连接超时(毫秒)
-	 * 
+	 *
 	 */
 	public static void setConnectTimeOut(int connectTimeOut) {
 		HttpClientProxy.connectTimeOut = connectTimeOut;
@@ -277,7 +278,7 @@ public class HttpClientProxy {
 	/**
 	 * @param readTimeOut
 	 *            读取数据超时(毫秒)
-	 * 
+	 *
 	 */
 	public static void setReadTimeOut(int readTimeOut) {
 		HttpClientProxy.readTimeOut = readTimeOut;
@@ -286,11 +287,11 @@ public class HttpClientProxy {
 	/**
 	 * @param requestEncoding
 	 *            请求编码
-	 * 
+	 *
 	 */
 	public static void setRequestEncoding(String requestEncoding) {
 		HttpClientProxy.requestEncoding = requestEncoding;
 	}
 
- 
+
 }
