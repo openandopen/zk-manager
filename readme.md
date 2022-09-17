@@ -1,6 +1,6 @@
 ### zookeeper在线后台管理
 ```
-作者:孤狼 联系方式:zuiwoxing@qq.com
+作者:黑肱  联系方式:zuiwoxing@qq.com
 ```
 ```
 项目介绍:
